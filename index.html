@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oddly — Random Topic Generator</title>
+  <meta name="description" content="Minimal topic generator with dark atmospheric hidden topics background torch flashlight effect.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Atmospheric background gradient -->
+  <div class="bg-gradient"></div>
+
+  <!-- Hidden topics layer with interactive torch flashlight -->
+  <div id="hidden-topics-container" class="hidden-topics-container" aria-hidden="true"></div>
+  <div id="torch-spotlight" class="torch-spotlight" aria-hidden="true"></div>
+
+  <!-- Category Side Illustration Layer -->
+  <div id="category-illustration-layer" class="category-illustration-layer" aria-hidden="true">
+    <img id="illustration-politics" class="category-illustration" src="assets/politics-removebg-preview.png" alt="Politics Illustration" data-category="politics" />
+    <img id="illustration-history" class="category-illustration" src="assets/ChatGPT_Image_Aug_12__2026__11_39_57_PM-removebg-preview.png" alt="History Illustration" data-category="history" />
+    <img id="illustration-financial" class="category-illustration" src="assets/financial-removebg-preview.png" alt="Financial Illustration" data-category="financial" />
+    <img id="illustration-ai-technology" class="category-illustration" src="assets/ai___technology-removebg-preview.png" alt="AI Technology Illustration" data-category="ai-technology" />
+    <img id="illustration-education" class="category-illustration" src="assets/education-removebg-preview.png" alt="Education Illustration" data-category="education" />
+  </div>
+
+  <!-- TOP RIGHT UTILITY BAR: STREAK & SOUND PILLS -->
+  <div class="top-right-controls">
+
+    <!-- Streak Pill -->
+    <div class="top-pill streak-pill" title="Current streak">
+      <div class="pill-left">
+        <svg class="flame-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 23c-4.97 0-9-3.58-9-8 0-4.42 4.03-7.5 7.5-12.5.5-.71 1.5-.71 2 0C15.97 7.5 20 10.58 20 15c0 4.42-4.03 8-8 8zm0-15.5C9.5 11.5 7 13.5 7 16c0 2.76 2.24 5 5 5s5-2.24 5-5c0-2.5-2.5-4.5-5-8.5z"/>
+        </svg>
+        <span>Streak</span>
+      </div>
+      <div id="streak-badge" class="streak-badge">3</div>
+    </div>
+
+    <!-- Sound Pill with Toggle Switch -->
+    <div class="top-pill sound-pill" title="Toggle Sound">
+      <div class="pill-left">
+        <svg class="sound-wave-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 12v.01M8 9v6M12 4v16M16 9v6M20 12v.01" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Sound</span>
+      </div>
+      <button id="sound-toggle-switch" class="toggle-switch active" aria-label="Toggle Sound">
+        <span class="toggle-knob"></span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDE WIDGET PANEL: DIFFICULTY SELECTOR & TOPIC HISTORY TRACKER -->
+  <aside id="right-side-panel" class="right-side-panel" aria-label="Difficulty & Topic History">
+    
+    <!-- 1. Difficulty Level Selector -->
+    <div class="panel-section difficulty-section">
+      <div class="panel-header">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span class="panel-title">Difficulty</span>
+      </div>
+      <div class="difficulty-options" role="radiogroup" aria-label="Difficulty Level">
+        <button class="difficulty-btn" data-difficulty="easy" role="radio" aria-checked="false">
+          <span class="diff-dot diff-easy"></span>
+          <span>Easy</span>
+        </button>
+        <button class="difficulty-btn active" data-difficulty="medium" role="radio" aria-checked="true">
+          <span class="diff-dot diff-medium"></span>
+          <span>Medium</span>
+        </button>
+        <button class="difficulty-btn" data-difficulty="hard" role="radio" aria-checked="false">
+          <span class="diff-dot diff-hard"></span>
+          <span>Hard</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Divider -->
+    <div class="panel-divider"></div>
+
+    <!-- 2. Topic History Tracker -->
+    <div class="panel-section history-tracker-section">
+      <div class="panel-header justify-between">
+        <div class="header-left">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span class="panel-title">Topic History</span>
+        </div>
+        <button id="clear-history-btn" class="clear-history-btn" title="Clear History">Clear</button>
+      </div>
+      
+      <div id="topic-history-list" class="topic-history-list">
+        <div class="history-empty">No topics spun yet.</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Homepage UI Container (Max 1200px) -->
+  <main class="page-wrapper">
+
+    <!-- 2. BRAND -->
+    <h1 class="brand-name">Oddly</h1>
+
+    <!-- CREATOR CREDIT -->
+    <div class="creator-credit">
+      <span class="credit-built">built by</span>
+      <span class="credit-separator">|</span>
+      <span class="credit-author">MINDMAKERS</span>
+    </div>
+
+    <!-- 3. MODE SELECTOR -->
+    <div class="mode-selector-container" role="radiogroup" aria-label="Mode selector">
+      <button class="mode-btn off-cuff active" data-mode="off-the-cuff" role="radio" aria-checked="true">
+        <svg class="icon-orange" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v4l3 3"></path>
+        </svg>
+        <span>Off the cuff</span>
+      </button>
+      <button class="mode-btn deep-res" data-mode="deep-research" role="radio" aria-checked="false">
+        <svg class="icon-teal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Deep research</span>
+      </button>
+    </div>
+
+    <!-- 4. CATEGORY NAVIGATION -->
+    <nav class="category-nav-container" aria-label="Topic categories">
+      <ul class="category-list">
+        <li class="category-item">
+          <button class="category-btn active" data-category="politics">Politics</button>
+        </li>
+        <li class="category-separator" aria-hidden="true"></li>
+        <li class="category-item">
+          <button class="category-btn" data-category="history">History</button>
+        </li>
+        <li class="category-separator" aria-hidden="true"></li>
+        <li class="category-item">
+          <button class="category-btn" data-category="financial">Financial</button>
+        </li>
+        <li class="category-separator" aria-hidden="true"></li>
+        <li class="category-item">
+          <button class="category-btn" data-category="ai-technology">AI Technology</button>
+        </li>
+        <li class="category-separator" aria-hidden="true"></li>
+        <li class="category-item">
+          <button class="category-btn" data-category="education">Education</button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- 5. READY LABEL -->
+    <div class="ready-label">READY</div>
+
+    <!-- 6. MAIN TITLE -->
+    <h2 id="main-topic-display" class="hero-title">Voting in Elections</h2>
+
+    <!-- 7. SUBTITLE -->
+    <p id="hero-subtitle" class="hero-subtitle">Minimal prep. Try to think quick on your feet.</p>
+
+    <!-- 8. ACTION BUTTONS -->
+    <div class="action-buttons-group">
+      <button id="spin-btn" class="btn-spin">Spin</button>
+      <button id="timer-btn" class="btn-timer">Start 1 min timer</button>
+      <button id="settings-btn" class="btn-settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- SETTINGS MODAL / PANEL OVERLAY -->
+  <div id="settings-overlay" class="settings-overlay" aria-hidden="true">
+    <div id="settings-panel" class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+      
+      <!-- Header -->
+      <div class="settings-header">
+        <h3 id="settings-modal-title" class="settings-title">Settings</h3>
+        <button id="settings-close-btn" class="settings-close-btn" aria-label="Close Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="settings-subtitle">Timer lengths in...</div>
+
+      <!-- Section: SPEECH -->
+      <div class="settings-group">
+        <div class="settings-group-header">
+          <span class="settings-group-title">SPEECH</span>
+          <span id="speech-duration-val" class="duration-badge">1 min</span>
+        </div>
+        <div class="slider-container">
+          <input 
+            type="range" 
+            id="speech-duration-slider" 
+            class="settings-slider" 
+            min="0" 
+            max="4" 
+            step="1" 
+            value="0" 
+            aria-label="Speech timer length"
+          />
+        </div>
+      </div>
+
+      <!-- Section: RESEARCH -->
+      <div class="settings-group">
+        <div class="settings-group-header">
+          <span class="settings-group-title">RESEARCH</span>
+          <span id="research-duration-val" class="duration-badge">1 min</span>
+        </div>
+        <div class="slider-container">
+          <input 
+            type="range" 
+            id="research-duration-slider" 
+            class="settings-slider" 
+            min="0" 
+            max="4" 
+            step="1" 
+            value="0" 
+            aria-label="Research timer length"
+          />
+        </div>
+        <div class="settings-hint">Deep research only</div>
+      </div>
+
+      <!-- Section: Sound -->
+      <div class="settings-group sound-group">
+        <div class="settings-group-header">
+          <span class="settings-group-title">Sound</span>
+        </div>
+        <label class="checkbox-label" for="settings-mute-checkbox">
+          <input 
+            type="checkbox" 
+            id="settings-mute-checkbox" 
+            class="settings-checkbox" 
+            aria-label="Mute sound"
+          />
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-text">Mute sound</span>
+        </label>
+        <div class="settings-hint">Saved for next time</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DEDICATED FULL-SCREEN TIMER VIEW -->
+  <div id="timer-view" class="timer-view" aria-hidden="true" role="region" aria-label="Timer View">
+    
+    <!-- Ambient Background Pulse / Glow -->
+    <div class="timer-ambient-glow"></div>
+    
+    <div class="timer-layout-wrapper">
+      
+      <!-- Central Timer Container -->
+      <div class="timer-container">
+        
+        <!-- Current Topic Badge / Header -->
+        <div class="timer-header-info">
+          <span id="timer-focus-label" class="timer-focus-label">FOCUS MODE</span>
+          <h2 id="timer-topic-title" class="timer-topic-title">Traffic Light</h2>
+          <span id="timer-mode-badge" class="timer-mode-badge">Off the cuff • 1 min</span>
+        </div>
+
+        <!-- Main Countdown Timer Display with Progress Ring -->
+        <div class="timer-display-wrapper">
+          <svg class="timer-progress-ring" viewBox="0 0 240 240">
+            <circle class="timer-ring-bg" cx="120" cy="120" r="108" />
+            <circle id="timer-ring-bar" class="timer-ring-bar" cx="120" cy="120" r="108" />
+          </svg>
+          <div id="timer-countdown-text" class="timer-countdown-text">01:00</div>
+        </div>
+
+        <!-- Timer Control Actions -->
+        <div class="timer-controls-group">
+          <button id="timer-pause-btn" class="btn-timer-action btn-pause" aria-label="Pause Timer">
+            <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+              <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+            </svg>
+            <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="timer-pause-text">Pause</span>
+          </button>
+
+          <button id="timer-next-phase-btn" class="btn-timer-action btn-next-phase" style="display: none;" aria-label="Done Researching - Start Speaking">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Done researching</span>
+          </button>
+
+          <button id="timer-reset-btn" class="btn-timer-action btn-reset" aria-label="Reset Timer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+            <span>Reset</span>
+          </button>
+
+          <button id="timer-exit-btn" class="btn-timer-action btn-exit" aria-label="Exit Timer View">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Exit</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Off The Cuff Speaking Roadmap Panel (Dynamic 4 Tasks) -->
+      <div id="speech-roadmap-panel" class="speech-roadmap-panel">
+        <div class="roadmap-header">
+          <span class="roadmap-badge">SPEAKING ROADMAP</span>
+          <h4 class="roadmap-title">4 Steps to Structure Your Talk</h4>
+        </div>
+        <ul id="roadmap-tasks-list" class="roadmap-tasks-list">
+          <!-- Dynamically Generated Tasks -->
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Audio Sound Effects -->
+  <audio id="audio-tick" preload="auto" src="data:audio/wav;base64,UklGRm4BAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YUoBAACAkJ+rsbGsoZODcmNXUE9TXGp5ipmlrK+spJeIeWpdVVJUW2Z0g5KfqKyrpZuNf3BjWlVVWmNwfoyZoqippZ2RhHZpX1lXWmFseYaTnaSmpJ6UiHtvZV1aW2FpdYGNmJ+jo56XjIB0amJeXWFocX2IkpqfoZ6Yj4R5b2diYGJnb3mDjZabnp2YkYh+dGxmY2NnbnZ/iZGXmpuYkoqBeHBqZmZobXR8hY2Tl5iWkoyEfHRuamhpbXN6gYmPk5WVko2Gf3hybmtrbnJ4f4WLkJKSkY2IgXt2cW9ub3J3fYKIjI+Qj4yIg355dXJxcXN3e4CFiYuNjYuIhIB8eHV0dHV3e3+ChoiKiomHhIF+e3h3dnd5e36Bg4WHh4eGhIF/fXt6eXl6fH5/gYOEhISEg4GAfn18fHx9fX5/gIGBgoKBgYCAf39/f39/f38="></audio>
+  <audio id="audio-result" preload="auto" src="data:audio/wav;base64,UklGRpkGAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YXUGAACAnrW/uaWIaU9CQ1Rvjqq7vbGYeVxHQUpgfpyzvrmmiWtRQ0RTboyoub2xmXteSUJKX3yasby5p4ttU0REU2yKpri8sZp9YEtDSl56mLC7uKeNb1VGRVJriaS2u7GbfmJMREpdeZauuriojnFXR0VSaoeitbqynIBkTkVKXHeUrLm4qI9yWUlGUmiFoLO6sp2CZlBGSlx2kqq4t6mRdFtKR1Fng56yubKeg2hSR0pbdJCotrepknZcS0dRZoKcsLixn4VpU0hLWnOPp7W2qpN4Xk1IUWWAmq63saCGa1VKS1pyjaWztaqUeWBPSVFkfpmttrGgiG1XS0xZcIujsrWqlXtiUEpRZH2Xq7SxoYlvWUxMWW+JobG0qpZ9ZFJLUWN7lamzsKKKcFpNTVluiJ+vs6qXfmVTTFFiepOosrCijHJcT01YbYaerrKqmIBnVU1SYXmSprGwoo10XlBOWGyFnKyxqpmBaVZOUmF3kKSwr6OOdV9RT1hrg5qrsKqZgmtYT1Jgdo6jrq+jj3dhU1BYaoKZqa+qmoRsWlBTYHWNoa2uo5B4Y1RQWGqAl6iuqpuFbltRU2B0i5+sraORemRWUVhpf5Wmrambhm9dU1Rfc4qeqqyjkntmV1JYaH6UpaypnIdxXlRUX3KInKmso5J9aFlTWWh8kqOrqZyIcmBVVV9xh5uoq6OTfmlaVFlne5GiqqiciXRhVlVfcIWZpqqjlH9rXFVZZ3qPoKmonYp1Y1hWX3CEmKWpo5SAbF1WWmZ5jp+op52Ld2VZV19vg5akqKOVgm5eV1pmeIydp6adjHhmWlhfboKVoqejlYNvYFhaZneLnKWmnY15aFxZX26Ak6GmopaEcWFZW2V2iZqkpZ2Ne2ldWV9tf5KfpaKWhXJjW1xldoiZo6SdjnxqXlpgbX6QnqShloZzZFxcZXWHl6KknY99bGBbYGx9j52joZaGdWZdXWV0hpago5yPfm1hXGBsfI6boqCXh3ZnXl5ldIWUn6KckH9vYl1hbHyMmqGgl4h3aF9eZXOEk56hnJCAcGReYWt7i5mgn5eJeGphX2ZygpKcoJyQgXFlX2JreoqXn56XiXlrYmBmcoGQm5+bkYJyZmBia3mJlp6el4p6bGNhZnKBj5qem5GCdGhhY2t5iJWcnZaKe25kYmZxgI6ZnZqRg3VpY2NreIeTm5yWi3xvZWNncX+Nl5yakYR2amRka3eGkpqblot9cGdjZ3F+jJabmZGFd2tlZWt3hZGZm5aLfnFoZGhxfYuVmpmRhXhtZmZsd4SQmJqVjH9yaWVocX2JlJmYkYZ5bmdmbHaDjpaZlYyAc2pmaXF8iJKYl5GGem9oZ2x2go2VmJSMgHVsZ2lxfIeRl5eRhntwaWhtdoGMlJeUjIF2bWhqcXuGkJaWkId8cWppbXWAi5OWk4yCd25qa3F7ho+VlZCHfHJsam11gIqSlZOMgnhva2txeoWOlJSQh31zbWtudX+JkZSSjIB4cGxscXqEjZKTj4d+dG5sbnV/iJCTkoyDeXFtbXJ6g4yRko+IfnVvbW91foeOkpGMg3pybm5yeYOLkJKOiH92cG5wdX6GjZGQi4R7c29ucnmCio+Rjoh/d3FvcHZ9hoyQj4uEfHRwb3N5gYmOkI2IgHhycHF2fYWLj4+LhHx1cXBzeYGIjY+Nh4B5c3Fydn2Eio6OioR9dnJxdHmAh4yOjIeBenRycnZ9g4mNjYqEfXdzcnR5gIaLjYuHgXp1c3N3fIOIjIyJhH54dHN1eX+FioyLh4F7dnR0d3yCh4uLiYR+eXV0dnp/hYmLioeBfHd1dXh8goeKioiEf3p2dXZ6f4SIiomGgnx4dnZ4fIGGiYmIhH96d3Z3en+Dh4mIhoJ9eXd2eXyBhYiIh4R/e3h3eHp+g4aIiIWCfXp4d3l8gISHiIaDgHx5eHh7foKFh4eFgn57eXh6fYCDhoeGg4B8enl5e36ChIaGhIF+e3p5en2Ag4WGhYOAfXt6enx+gYSFhYSBf3x7ent9gIKEhYSCgH58e3t8foGDhISDgX99e3t8fYCCg4SDgoB+fHx8fX+AgoODgoF/fXx8fX5/gYKDgoGAfn19fX1/gIGCgoKBf359fX1+f4GBgoKBgH9+fn5+f4CBgYGBgH9+fn5+f3+AgYGBgIB/f35+f3+AgICAgIB/f39/f39/gICAgICAf39/f38="></audio>
+  <audio id="audio-finish" preload="auto" src="data:audio/wav;base64,UklGRg8NAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YesMAACAlqq7xsvKwrShjHVfTT42NDhDU2h+lKi5xcvKwrWjjXdhTkA3NDhDUmZ8kqe4xMrKw7akj3ljUEE4NThCUWR6kKW2w8nJw7alkXtlUkM5NThBUGN4jqO1wcnJw7enknxnU0Q6NjhBT2J3jaGzwMjJw7iolH5pVUU7NjhATmB1i6Cxv8fIxLmplYBrV0c8NzhATV9ziZ6wvsbIxLmql4JsWUg9ODg/TF1yh5yuvMXIxLqrmINuWko+ODk/S1xwhZqtu8THxLusmoVwXEs/OTk/S1tvhJirusPHxLutm4dyXk1BOjk/SlptgpepuMLGxLyunYhzYE5COjk+SVlsgJWot8HGxLyvnop1YVBDOzo+SFdqf5OmtcDFxL2wn4x3Y1JEPDo+SFZpfZGktL/ExL2xoI15ZVNGPTo+R1Vne5Cjsr7Ew72yoo96ZlVHPjs+R1Rmeo6hsb3Dw76yo5B8aFZIPzs+RlNleIyfr7vCw76zpJJ+anshKQDw+RlNjd4uerrrBw760ppSBbVtMQj0+RVJidYmcrLnAwr60ppSBbVtMQj0+RVFhdIeaq7jAwr61p5aCb11OQz4+RVBgcoaZqbe/wb61qJeEcF5PRD8/RE9fcYSXqLW+wb62qZiFcmBRRT8/RE9db4KVprS9wL62qpqHdGJSR0A/RE5cboGUpbO8wL63q5uIdWNTSEFARE1bbX+So7G7v763q5yKd2VVSUJARE1aa36RorC6v763rJ2LeGZWSkNARExZanyPoK+5vr64rZ6NemhYS0NBRExZaXuNn624vb24rp+OfGlZTURBREtYaHmMnay3vb24rqCPfWtbTkVCREtXZniKnKq1vL24r6GRf21cT0ZCREtWZXeJmqm0u7y4r6KSgG5eUEdDREpVZHWHmaizury4sKOTgXBfUkhEREpVY3SGl6ayuby4sKSUg3FhU0lEREpUYnOElqWxuLu4saWVhHNiVEpFRUpTYXGDlKOwuLu4saaXhnRkVktGRUpTYHCBk6Kut7q4saaYh3ZlV0xGRUlSX2+AkaGttrm4sqeZiHdnWE5HRklSXm5/kJ+stbm4sqiainloWk9IRklRXW19jp6rtLi4sqibe3pqW1BJR0lRXWt8jZyps7i3sqmcjHtrXFFKR0lRXGp7i5uosre3s6mdjX1sXlJLSEpQW2l5ipmnsba3s6qejn5uX1NLSEpQW2h4iJimsLW2s6qekH9vYVVMSUpQWmd3h5ekr7W2s6ufkYFxYlZNSUpQWWZ2hpWjrbS2s6ugkoJyY1dOSkpPWWV0hJSirLO1s6yhk4NzZVhPS0tPWGVzg5Ogq7K1s6yhlIR1ZllQS0tPWGRygpGfqrG0sqyilYZ2Z1tRTEtPV2NxgZCeqbC0sqyjlod3aVxSTUxPV2Jwf4+cqLCzsq2jl4h5al1TTUxPVmFvfo2bp6+zsq2kl4l6a15UTkxPVmFufYyapa6ysq2kmIp7bWBVT01PVmBtfIuZpK2xsa2lmYt8bmFXUE1PVl9seomXo6yxsa2lmox+b2JYUU5QVV9reYiWoquwsa2mm41/cGNZUk5QVV5qeIeVoaqvsK2mm46AcmVaUk9QVV5qd4aToKmusK2mnI+Bc2ZbU1BQVV1pdoSSnqiur62nnZCCdGdcVFBQVV1odbORnaetr62nnZGDdWhdVVFRVVxndIKQnKasrq2nnpKEd2peVlJRVVxnc4GPm6Wrrq2nnpOGeGtgV1JRVVxmcoCNmqSqraynn5SHeWxhWFNSVVtlcX+MmKKpraynn5SIem1iWVRSVVtlcH6Ll6GprKynoJWJe25jWlVTVVtkcH2KlqCorKuooJaJfG9kW1VTVVtkb3yJlZ+nq6uooJaKfXFlXFZUVVtjbnuIlJ6mqquooZeLfnJmXVdUVVpjbXqGk52lqqqnoZiMgHNnXlhVVlpibXmFkZykqaqnoZiNgXRXl1lVVlpibHiEkJujqKqnoZmOgnVqYFlWVlpha3eDj5qip6mnopmPgnZrYVpXV1pha3aCjpmhp6mnopqPg3dsYltXV1phanWBjZigpqinopqQhHhtY1xYV1pgaXSAjJefpainopuRhXluZF1ZWFpgaXR/i5aepKemopuRhnpvZV5ZWFpgaHN+ipWdo6amopuSh3twZl9aWVtgaHJ9iZOco6amopySiHxxZ2BbWVtgaHF8iJKboqWlopyTiX1yaGFbWltgZ3F8h5GaoaWlopyUiX5zaWFcWltgZ3B7hpCZoKSlopyUin90amJdW1tgZnB6hY+Yn6OkopyUi4B1a2NeW1xgZm95hI6XnqOkop2Vi4F2bGRfXFxgZm54g42WnqKjoZ2VjIJ3bWVfXFxgZm54goyWnaGjoZ2WjYJ4bmZgXV1gZW13gYuVnKCioZ2WjYN5b2dhXl1gZW12gIuUm6CioZ2WjoR6cGhiXl5gZW12gIqTmp+hoJ2XjoV7cWljX15gZWx1f4mSmZ6hoJ2Xj4V8cmpjYF5gZWx0foiRmJ2goJ2Xj4Z8c2tkYF9gZWt0fYeQl52gn52XkId9dGxlYV9hZWtzfYaPlpyfn52XkId+dW1mYmBhZWtzfIWOlpuen5yYkYh/dm1nYmBhZWtye4SNlZqenpyYkYmAd25oY2FiZWpye4SMlJqdnpyYkYmAd29oZGFiZWpxeoOLk5mcnZyYkYqBeHBqZmZobXR8hY2Tl5iWkoyEfHRuamhpbXN6gYmPk5WVko2Gf3hybmtrbnJ4f4WLkJKSkY2IgXt2cW9ub3J3fYKIjI+Qj4yIg355dXJxcXN3e4CFiYuNjYuIhIB8eHV0dHV3e3+ChoiKiomHhIF+e3h3dnd5e36Bg4WHh4eGhIF/fXt6eXl6fH5/gYOEhISEg4GAfn18fHx9fX5/gIGBgoKBgYCAf39/f39/f38="></audio>
+
+  <!-- Modules -->
+  <script src="hidden-topics.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
